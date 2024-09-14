@@ -35,6 +35,11 @@ export default function Setup() {
         "Real Estate",
         "Materials"
       ];
+    // const sectors = [
+    //     "AAPL",
+    //     "NVDA",
+    //     "GOO"
+    // ]
 
     const toggleItem = (item: string) => {
         setSelectedItems(prevItems => 
@@ -65,7 +70,6 @@ export default function Setup() {
         } catch (err) {
             console.error("Error fetching API:", err);
         }
-        return redirect("/");
     };
 
     const handleSubmit = () => {

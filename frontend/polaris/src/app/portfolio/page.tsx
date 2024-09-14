@@ -1,9 +1,12 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import React, { useState } from "react";
 
 import StockCard from "@/components/stocks/StockCard";
 
 export default async function Page() {
+
+
 
   // const options = {method: 'GET', headers: {accept: 'application/json'}};
 
@@ -34,9 +37,9 @@ export default async function Page() {
     if (stocks != undefined) {
       return (
         <div className = "flex flex-col">
-          <div className="flex items-center">
+          <div className="flex flex-col items-center">
           {stocks.map((stock: String) => (
-              <div className = "flex flex-row px-5 py-5 space-x-10">
+              <div className = "flex flex-col px-5 py-5 space-x-10">
               <StockCard ticker={stock} />
   
               </div>
