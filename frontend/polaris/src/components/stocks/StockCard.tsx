@@ -1,93 +1,105 @@
-// "use client";
-
-// import React from "react";
-// import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-// import { useState } from "react";
-
-// interface StockCardProps {
-//   ticker: String;
-// }
-
-// export default function StockCard({ ticker }: StockCardProps) {
-//     const [response, setResponse] = useState<string>();
-
-//   const options = {method: 'GET', headers: {accept: 'application/json'}};
-
-//   const bezinga_token = process.env.BEZINGA_API_KEY 
-//   fetch(`https://api.benzinga.com/api/v2/news?token=${bezinga_token}&tickers=${ticker}`, options)
-//     .then(response => response.json())
-//     .then(response => console.log(response))
-//     .catch(err => console.error(err));
-
-//   return (
-//     <Card className="w-[1000px]">
-//       <CardHeader>
-//         <CardTitle>{ticker.toUpperCase()}</CardTitle>
-//       </CardHeader>
-//       <CardContent>
-//         <p>Stock ticker: {ticker.toUpperCase()}</p>
-//         <p></p>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
-
-"use client";
-
+"use client"
+import Link from "next/link"
 import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-// types.ts
-
-export interface NewsArticle {
-    id: number;
-    author: string;
-    created: string;
-    updated: string;
+interface NewsArticle {
+    id: string;
+    publisher: {
+      name: string;
+      homepage_url: string;
+      logo_url: string;
+      favicon_url: string;
+    };
     title: string;
-    teaser: string;
-    body: string;
-    url: string;
-    image: Array<object>; // Define more specific type if available
-    channels: Array<object>; // Define more specific type if available
-    stocks: Array<object>; // Define more specific type if available
-    tags: Array<object>; // Define more specific type if available
+    author: string;
+    published_utc: string;
+    article_url: string;
+    tickers: string[];
+    image_url: string;
+    description: string;
+    keywords: string[];
+    insights: {
+      ticker: string;
+      sentiment: string;
+      sentiment_reasoning: string;
+    }[];
   }
-  
-  export interface NewsResponse {
-    articles: NewsArticle[];
-  }
+
+interface NewsResponse {
+  results: NewsArticle[];
+}
 
 interface StockCardProps {
   ticker: String;
 }
 
 export default function StockCard({ ticker }: StockCardProps) {
-    const [data, setData] = useState(null)
+    const [data, setData] = useState<NewsResponse | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-//   useEffect(() => {
-
-    const options = {method: 'GET', headers: {accept: 'application/json'}};
-    const bezingaToken = process.env.BEZINGA_API_KEY;
+    const polygonKey = ...
 
 
-    
-//   }, [])
-fetch(`https://api.benzinga.com/api/v2/news?token=${bezingaToken}`, options)
-        .then(data => data.json())
-        .then(data => 
-            console.log(data))
-  if (data) {
+
+    useEffect(() => {
+        const options = { method: 'GET', headers: { accept: 'application/json' } };
+        
+
+        fetch(`https://api.polygon.io/v2/reference/news?ticker=${ticker}&limit=2&apiKey=${polygonKey}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data: NewsResponse) => {
+                console.log(data);
+                setData(data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Fetching error:", error);
+                setError(error.message);
+                setLoading(false);
+            });
+    }, [ticker]);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error: {error}</p>;
+
     return (
-        <Card className="w-full max-w-[1000px] mx-auto">
-        <CardHeader>
-            <CardTitle className="text-2xl font-bold">{ticker.toUpperCase()} News</CardTitle>
-        </CardHeader>
-        <CardContent>
-
-            {data[0]}
-        </CardContent>
+        <Card className="w-[1000px] mx-auto">
+            <CardHeader>
+                <CardTitle className="text-2xl font-bold">{ticker.toUpperCase()}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {data && data.results && data.results.length > 0 ? (
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Current News:</h3>
+                        <ul className="list-disc pl-5 space-y-2">
+                            {data.results.map((article, index) => (
+                                <li key={article.id} className="text-sm">
+                                    <Link href = {article.article_url} className="text-blue-600 hover:text-blue-800 underline">{article.title} </Link>
+                                    <ul className="ml-6 mt-1 list-disc">
+                                        <li className="text-xs text-gray-600">
+                                        Description: {article.description}
+                                        </li>
+                                        <li className="text-xs text-gray-600">
+                                        Sentiment: {article.insights[0].sentiment_reasoning}
+                                        </li>
+        
+                        
+                                    </ul>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <p>No news articles available.</p>
+                )}
+            </CardContent>
         </Card>
-    );}
+    );
 }

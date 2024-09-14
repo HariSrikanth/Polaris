@@ -33,17 +33,7 @@ export default async function Page() {
     console.log(stocks)
     if (stocks != undefined) {
       return (
-        <div className = "flex flex-col">
-          <div className="flex items-center">
-          {stocks.map((stock: String) => (
-              <div className = "flex flex-row px-5 py-5 space-x-10">
-              <StockCard ticker={stock} />
-  
-              </div>
-          ))}
-
-          </div>
-          </div>
+        <p>hello</p>
         )
     } else {
       redirect('/setup')
