@@ -39,7 +39,7 @@ export default function StockCard({ ticker }: StockCardProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const polygonKey = ...
+    const polygonKey = "BotM5ZVsfrhsHw6zNEmRlmdtj_DIij8K"
 
 
 
