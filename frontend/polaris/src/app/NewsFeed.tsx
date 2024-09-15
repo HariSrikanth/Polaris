@@ -70,7 +70,7 @@ export default function NewsFeed({ initialTopic, initialTrends }: NewsFeedProps)
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
+      <h1 className="text-3xl font-bold mb-6 pl-[30%]">
         Here's what's new in
         <span className="relative inline-block ml-2">
           <select
@@ -78,11 +78,11 @@ export default function NewsFeed({ initialTopic, initialTrends }: NewsFeedProps)
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
           >
-            <option value="technology">technology</option>
-            <option value="consumer_staples">consumer staples</option>
-            <option value="automobiles">automobiles</option>
-            <option value="healthcare">healthcare</option>
-            <option value="finance">finance</option>
+            <option value="technology">technology:</option>
+            <option value="consumer_staples">consumer staples:</option>
+            <option value="automobiles">automobiles:</option>
+            <option value="healthcare">healthcare:</option>
+            <option value="finance">finance:</option>
           </select>
         </span>
       </h1>
