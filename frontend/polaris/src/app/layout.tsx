@@ -75,17 +75,24 @@ export default function RootLayout({
                   </NavigationMenuLink>
                 </Link>  
                 </NavigationMenuItem>
-                <NavigationMenuItem >
+                {/* <NavigationMenuItem >
                   <Link href="/setup" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                     Choose Sectors
                   </NavigationMenuLink>
                 </Link>  
+                </NavigationMenuItem> */}
+                <NavigationMenuItem >
+                  <Link href="/dashboard" legacyBehavior passHref>
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Dashboard
+                  </NavigationMenuLink>
+                </Link>  
                 </NavigationMenuItem>
                 <NavigationMenuItem >
-                  <Link href="/landing" legacyBehavior passHref>
+                  <Link href="/chat" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Landing
+                    Advisor
                   </NavigationMenuLink>
                 </Link>  
                 </NavigationMenuItem>
