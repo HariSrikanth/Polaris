@@ -19,6 +19,9 @@ export default async function Page() {
     { id: 5, text: "Additional news item 2" },
     { id: 6, text: "Additional news item 3" },
     { id: 7, text: "Additional news item 4" },
+    { id: 8, text: "Additional news item 5" },
+    { id: 9, text: "Additional news item 6" },
+    { id: 10, text: "Additional news item 7" },
   ]
 
   if (!userId) {
@@ -27,7 +30,7 @@ export default async function Page() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 className="text-3xl font-bold mb-8 text-center">
         Here's what's new in
         <span className="relative inline-block ml-2">
           <select className="appearance-none bg-transparent border-grey pr-8 focus:outline-none">
@@ -43,7 +46,7 @@ export default async function Page() {
         ))}
       </div>
 
-      <div className="space-y-4">
+      <div className="flex flex-col items-start pl-[5%]">
         {newsItems.map((item) => (
           <NewsItem key={item.id} {...item} />
         ))}

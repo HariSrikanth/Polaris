@@ -7,7 +7,7 @@ interface NewsItemProps {
 
 export default function NewsItem({ id, text }: NewsItemProps) {
   return (
-    <div className="border-b border-gray-200 py-4 hover:bg-gray-100 transition-colors duration-200">
+    <div className="mb-4 p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-150 hover:bg-gray-50">
       <p className="text-lg">
         <span className="font-semibold mr-2">{id}.</span>
         {text}
