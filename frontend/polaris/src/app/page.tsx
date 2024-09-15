@@ -129,7 +129,7 @@ export function calculateImpact(trend: Trend): number {
   const [positive, neutral, negative] = trend.sentiments;
   
   // Sentiment score with positive bias
-  const sentimentScore = positive * 1.5 + neutral * 0.5 - negative;
+  const sentimentScore = positive * 0.4 + neutral * 0.2 - negative * 0.4;
 
   // News production increase
   const newsToday = trend.news_articles_today.length;
@@ -139,10 +139,17 @@ export function calculateImpact(trend: Trend): number {
   // Reddit usage increase
   const redditIncrease = (trend.reddit_mentions_today - trend.reddit_mentions_week / 7) / (trend.reddit_mentions_week / 7 || 1);
 
-  // Combine factors with weights
-  let impact = sentimentScore * 0.5 + Math.abs(newsIncrease) * 0.25 + Math.abs(redditIncrease) * 0.25;
+  //New proposed weighin, Oliver and Sri *unsure about the java code but you get the weighin idea, just make the sentiment scale the frequency values'
+  let weightedSum: number = Math.abs(newsIncrease) * 0.60 + Math.abs(redditIncrease) * 0.40;
 
-  // Take the absolute value to make all scores positive
+  let impact: number = sentimentScore * weightedSum;
+
+  
+  //const impact: number = Math.abs(sentimentScore) * weightedSum;
+  // Combine factors with weights
+  //let impact = Math.abs(sentimentScore) * 0.5 + Math.abs(newsIncrease) * 0.30 + Math.abs(redditIncrease) * 0.20;
+
+  // Take the absolute value to make all scores positive (dont we lose information on whether to sell then??)
   impact = Math.abs(impact);
 
   // Normalize to [0, 1] range
