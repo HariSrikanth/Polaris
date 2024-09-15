@@ -42,7 +42,9 @@ export default function NewsCard({ id, title, change, references,  impact }: New
       </div>
       <div>
         <h3 className="font-semibold mb-2">References:</h3>
-        {references}
+        <div className="underline">
+          {references}
+        </div>  
       </div>
     </div>
   );
