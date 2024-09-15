@@ -82,13 +82,13 @@ export default function RootLayout({
                   </NavigationMenuLink>
                 </Link>  
                 </NavigationMenuItem>
-                {/* <NavigationMenuItem >
-                  <Link href="/portfolio" legacyBehavior passHref>
+                <NavigationMenuItem >
+                  <Link href="/landing" legacyBehavior passHref>
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Portfolio
+                    Landing
                   </NavigationMenuLink>
                 </Link>  
-                </NavigationMenuItem> */}
+                </NavigationMenuItem>
               </NavigationMenuList>
               </NavigationMenu>
               </div>
