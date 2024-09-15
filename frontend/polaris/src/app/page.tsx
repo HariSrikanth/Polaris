@@ -1,3 +1,4 @@
+"use client"
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import NewsCard from "./NewsCard"
@@ -6,6 +7,9 @@ import { scrapeReddit }  from './stockScore';
 import StockCard from "@/components/stocks/StockCard";
 import { get } from 'http';
 import Link from "next/link"
+import NewsFeed from './NewsFeed'
+//simport SideChatbar from './SideBar'
+import { useState } from 'react';
 
 interface Image {
   size: 'small' | 'large' | 'thumb';
@@ -44,7 +48,7 @@ interface SimpleArticle {
   url: string;
 }
 
-function parseAndStructureSentiment(sentimentArray: string[]): { [key: string]: number[] }[] {
+export function parseAndStructureSentiment(sentimentArray: string[]): { [key: string]: number[] }[] {
   return sentimentArray.map(item => {
     const lines = item.split('\n');
     const result: { [key: string]: number[] } = {};
@@ -64,7 +68,7 @@ function parseAndStructureSentiment(sentimentArray: string[]): { [key: string]: 
   });
 }
 
-async function analyzeSentiment(headlines: String[]) {
+export async function analyzeSentiment(headlines: String[]) {
   const analyzeHeadline = async (headline: String) => {
     const response = await fetch("https://proxy.tune.app/chat/completions", {
       method: "POST",
@@ -121,7 +125,7 @@ interface Trend {
 }
 
 
-function calculateImpact(trend: Trend): number {
+export function calculateImpact(trend: Trend): number {
   const [positive, neutral, negative] = trend.sentiments;
   
   // Sentiment score with positive bias
@@ -158,7 +162,7 @@ function calculateImpact(trend: Trend): number {
   return Math.round(impact);
 }
 
-function getTrends(
+export function getTrends(
   structuredSentiment: { [key: string]: number[] }[], 
   topData: BezNewsArticle[], 
   tickerNews: TickerNews, 
@@ -218,7 +222,7 @@ interface TickerNews {
   };
 }
 
-async function fetchNewsForTickers(tickers: string[]): Promise<TickerNews> {
+export async function fetchNewsForTickers(tickers: string[]): Promise<TickerNews> {
   const apiKey = 'BotM5ZVsfrhsHw6zNEmRlmdtj_DIij8K';
   const today = new Date().toISOString().split('T')[0];
   const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
@@ -253,7 +257,7 @@ async function fetchNewsForTickers(tickers: string[]): Promise<TickerNews> {
 }
 
 
-async function getNews(topic: String) {
+export async function getNews(topic: String) {
   const myHeaders = new Headers();
   myHeaders.append("accept", "application/json");
 
@@ -290,7 +294,7 @@ interface RedditData {
   countWeek: number;
 }
 
-async function fetchRedditData(tickers: string[]): Promise<{ [ticker: string]: RedditData }> {
+export async function fetchRedditData(tickers: string[]): Promise<{ [ticker: string]: RedditData }> {
   const subreddits = 'wallstreetbets+trading+stockmarket+investing+tradingreligion';
   const dayLength = 86400;
   const offsetDay = dayLength;
@@ -300,10 +304,10 @@ async function fetchRedditData(tickers: string[]): Promise<{ [ticker: string]: R
 
   for (const ticker of tickers) {
     try {
-      const countDay = await scrapeReddit([ticker], subreddits, offsetDay);
-      const countWeek = await scrapeReddit([ticker], subreddits, offsetWeek);
-      // const countDay = 0
-      // const countWeek = 0
+      // const countDay = await scrapeReddit([ticker], subreddits, offsetDay);
+      // const countWeek = await scrapeReddit([ticker], subreddits, offsetWeek);
+      const countDay = 0
+      const countWeek = 0
 
       tickerRedditData[ticker] = {
         countDay,
@@ -320,163 +324,100 @@ async function fetchRedditData(tickers: string[]): Promise<{ [ticker: string]: R
 
   return tickerRedditData;
 }
-
+  
 
 export default async function Page() {
-  const { userId } = auth()
-  const user = await currentUser()
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Toggle chat state
+  const toggleChat = () => {
+    setIsChatOpen((prev) => !prev);
+  };
+
+  const handleChatOpen = () => {
+    setIsChatOpen(true);
+  };
+
+  // Function to close the chat
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+  };
+
 
   const bezinga_token = process.env.BEZINGA_API_KEY 
   const options = {method: 'GET'};
-
-  const topic = "finance"
-    const data = await getNews(topic)
-    console.log(data)
-
-    const topData = data.slice(0,10)
-
-    const titles: String[] = topData.map((item: BezNewsArticle) => item.title);
-    // const combinedTitles: String = titles.join('; ');
-
-    const sentiment = await analyzeSentiment(titles);
-    console.log(sentiment)
-    
-    const structuredSentiment = parseAndStructureSentiment(sentiment);
-
-    console.log(structuredSentiment);
-
-    const tickers = Object.keys(structuredSentiment.reduce((acc, curr) => ({ ...acc, ...curr }), {}));
-
-    const tickerNews = await fetchNewsForTickers(tickers);
-    console.log(tickerNews);
-
-    const dayLength = 86400;
-    const offsetDay = dayLength;
-    const offsetWeek = 7 * dayLength;
-    const redditMentionsWeek = await scrapeReddit(["GOOG"], "wallstreetbets", offsetWeek);
-    console.log(redditMentionsWeek)
-
-    const tickerRedditData = await fetchRedditData(tickers);
-    console.log(tickerRedditData)
-    const trends = getTrends(structuredSentiment, topData, tickerNews, tickerRedditData)
-    
-    console.log(trends)
-
-  
-
-
-   
-    // const teslaKeywords = [
-    //   "Tesla stock",
-    //   "buy Tesla stock",
-    //   "reasons to buy Tesla",
-    //   "Tesla investment",
-    //   "Tesla financials",
-    //   "Tesla growth",
-    //   "Tesla market analysis",
-    //   "Tesla earnings",
-    //   "Tesla stock tips",
-    //   "Tesla trading",
-    //   "Tesla innovation",
-    //   "Tesla future outlook",
-    //   "Tesla electric vehicles",
-    //   "Tesla performance",
-    //   "Tesla technology",
-    //   "TSLA"
-    // ];
-    
-    
-
-    //const redditMentionsToday = await scrapeReddit(teslaKeywords, "wallstreetbets", offsetDay);
-  
-  
-  // Placeholder data - replace with actual API calls
-  const newsCards = [
-    { 
-      id: 1, 
-      title: trends[0].ticker, 
-      change: "+2.5%", 
-      impact: trends[0].impact,
-      references: (
-        <ol className="list-decimal list-inside">
-          {trends[0].news_articles_today.map((article, index) => (
-            <li key={index}>
-              <Link href={article.url}>{article.title}</Link>
-            </li>
-          ))}
-        </ol>
-      ),
-    },
-    { 
-      id: 2, 
-      title: trends[1].ticker, 
-      change: "-1.2%", 
-      impact: trends[1].impact,
-      references: (
-        <ol className="list-decimal list-inside">
-          {trends[1].news_articles_today.map((article, index) => (
-            <li key={index}>
-              <Link href={article.url}>{article.title}</Link>
-            </li>
-          ))}
-        </ol>
-      ),
-    },
-    { 
-      id: 3, 
-      title: trends[2].ticker, 
-      change: "+3.7%", 
-      impact: trends[2].impact,
-      references: (
-        <ol className="list-decimal list-inside">
-          {trends[2].news_articles_today.map((article, index) => (
-            <li key={index}>
-              <Link href={article.url}>{article.title}</Link>
-            </li>
-          ))}
-        </ol>
-      ),
-    },
-  ];
-
-  const newsItems = [
-    { id: 4, text: `${trends[3].news_articles_today[0].title}` },
-    { id: 5, text: `${trends[4].news_articles_today[0].title}` },
-    { id: 6, text: `${trends[5].news_articles_today[0].title}` },
-    { id: 7, text: `${trends[6].news_articles_today[0].title}` },
-    { id: 8, text: `${trends[7].news_articles_today[0].title}` },
-    { id: 9, text: `${trends[8].news_articles_today[0].title}` },
-    { id: 10, text: `${trends[9].news_articles_today[0].title}` },
-  ]
-
-  if (!userId) {
-    redirect('/login')
-  }
+  const initialTopic = "finance";
+  const data = await getNews(initialTopic);
+  const topData = data.slice(0, 10);
+  const titles = topData.map((item: any) => item.title);
+  const sentiment = await analyzeSentiment(titles);
+  const structuredSentiment = parseAndStructureSentiment(sentiment);
+  const tickers = Object.keys(structuredSentiment.reduce((acc: String, curr: String) => ({ ...acc, ...curr }), {}));
+  const tickerNews = await fetchNewsForTickers(tickers);
+  const tickerRedditData = await fetchRedditData(tickers);
+  const initialTrends = getTrends(structuredSentiment, topData, tickerNews, tickerRedditData);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8 text-center">
-        Here's what's new in
-        <span className="relative inline-block ml-2">
-          <select className="appearance-none bg-transparent border-grey pr-8 focus:outline-none">
-            <option>the world</option>
-            <option>your portfolio</option>
-          </select>
-        </span>
-      </h1>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {newsCards.map((card) => (
-          <NewsCard key={card.id} {...card} />
-        ))}
+    <div>
+      <div>
+      {/* Chat sidebar */}
+      <div className={`chatbar ${isChatOpen ? 'open' : ''}`}>
+        <button className="toggle-button" onClick={isChatOpen ? handleChatClose : handleChatOpen}>
+          {isChatOpen ? 'Close' : 'Chat'}
+        </button>
+        {isChatOpen && (
+          <div className="chatbar-content">
+            <h2>Chat Window</h2>
+            <p>Start your conversation here!</p>
+            {/* Additional chat logic can be added here */}
+          </div>
+        )}
       </div>
 
-      <div className="flex flex-col items-start pl-[5%]">
-        {newsItems.map((item) => (
-          <NewsItem key={item.id} {...item} />
-        ))}
+      {/* Main content */}
+      <div className="content">
+        <h1>Welcome to the Page</h1>
+        {/* Your main page content goes here */}
       </div>
+
+      {/* Styling (inline for demo, better to use external stylesheets) */}
+      <style jsx>{`
+        .chatbar {
+          position: fixed;
+          right: 0;
+          top: 0;
+          width: 300px;
+          height: 100%;
+          background-color: #f4f4f4;
+          box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+          transition: transform 0.3s ease;
+          transform: translateX(${isChatOpen ? '0' : '100%'});
+          z-index: 1000;
+        }
+        .chatbar-content {
+          padding: 20px;
+        }
+        .toggle-button {
+          position: absolute;
+          left: -80px;
+          top: 20px;
+          padding: 10px;
+          background-color: #007bff;
+          color: white;
+          border: none;
+          cursor: pointer;
+          z-index: 1100;
+        }
+        .content {
+          padding: 20px;
+        }
+      `}</style>
     </div>
+      <NewsFeed initialTopic={initialTopic} initialTrends={initialTrends} />;
+   </div>
   )
+
 }
+
+
 
