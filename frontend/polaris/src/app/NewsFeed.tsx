@@ -74,7 +74,7 @@ export default function NewsFeed({ initialTopic, initialTrends }: NewsFeedProps)
         Here's what's new in
         <span className="relative inline-block ml-2">
           <select
-            className="appearance-none bg-transparent border-grey pr-8 focus:outline-none"
+            className="appearance-none bg-transparent border-grey pr-8 focus:outline-none text-[#002856] opacity-85"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
           >

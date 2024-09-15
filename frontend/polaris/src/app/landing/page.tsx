@@ -30,7 +30,7 @@ export default function LandingPage() {
         Master the Market
       </div>
       <h1 className="text-5xl font-serif mb-4">
-        <span className="italic">Let</span> the <span className="font-bold">North Star</span> guide your financial decisions
+        <span className="italic">Let</span> the <span className="font-bold text-[#002856]">North Star</span> guide your financial decisions
       </h1>
       <p className="text-xl mb-6 text-gray-500">
       Polaris is a real-time market analysis tool that leverages an agentic LLM 
