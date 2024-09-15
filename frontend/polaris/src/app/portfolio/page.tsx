@@ -28,13 +28,12 @@ export default async function Page() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">
-        Here's what's new in 
+        Here's what's new in
         <span className="relative inline-block ml-2">
-          <select className="appearance-none bg-transparent border-none pr-8 focus:outline-none">
+          <select className="appearance-none bg-transparent border-grey pr-8 focus:outline-none">
             <option>the world</option>
             <option>your portfolio</option>
           </select>
-          <span className="absolute right-2 top-1/2 transform -translate-y-1/2">▼</span>
         </span>
       </h1>
 
